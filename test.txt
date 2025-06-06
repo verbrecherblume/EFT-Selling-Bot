@@ -1,1 +1,10 @@
-Der erste commit versuch 
+Was soll der Bot machen?
+
+Der Bot soll ein Item zu etwas billiger als dem momentanen niedrigsten preis auf dem flea market verkaufen
+
+
+
+
+(geplante Features)
+- abgleichen ob es lohnenswerter ist auf dem flea market zu verkaufen oder bei den tradern
+    + geht vielleicht mit tarkov.dev api?
