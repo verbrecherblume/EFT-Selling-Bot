@@ -8,3 +8,12 @@ Der Bot soll ein Item zu etwas billiger als dem momentanen niedrigsten preis auf
 (geplante Features)
 - abgleichen ob es lohnenswerter ist auf dem flea market zu verkaufen oder bei den tradern
     + geht vielleicht mit tarkov.dev api?
+
+
+Stand 06.06.2025
+Skript holt preise von tarkov.dev, verkauft sie für diesen preis auf dem flea market
+- abgleich mit trader nicht implementiert
+- preise sind zum teils schon etwas veraltet, da tarkov.dev nur alle 5 minuten preise aktualisiert
+
+-> neuer ansatz: preise sollen aus dem flea market im game ausgelesen werden, dadurch akuraterer preis
+                 dadurch auch keine api anfragen benötigt (außer ich will mit tradern abgleichen)
