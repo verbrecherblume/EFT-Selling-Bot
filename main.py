@@ -87,11 +87,11 @@ def calculate_width_height(top_left: tuple[int, int], bottom_right: tuple[int, i
 
 
 #cursor auf den ersten slot setzen
-def cursor_auf_anfang() -> None:
+def cursor_auf_anfang() -> tuple[float, float]:
     #Koordinaten erster Slot (1266, 80)
     # Koordinaten zweiter Slot (1329, 80)
     # Dimensionen eines Slots: 63 * 63
-    gui.moveTo(1266 + 63/2, 80 + 63/2)
+    return (1266 + 63/2, 80 + 63/2)
 
 
 
@@ -104,7 +104,7 @@ def run_query(query):
         raise Exception("Query failed to run by returning code of {}. {}".format(response.status_code, query))
 
 
-def highest_vendor(data: dict) -> str:
+def highest_vendor(data: dict) -> tuple[str, int]:
     max_price: int = 0
     max_price_vendor: str
     counter: int = 0
@@ -115,10 +115,47 @@ def highest_vendor(data: dict) -> str:
 
         counter += 1
 
-    return max_price_vendor
+    return (max_price_vendor, max_price)
 
-def sell_to_vendor(vendor: str) -> None:
-    ...
+def sell_to_vendor(vendor_price: tuple[str, int]) -> None:
+    if vendor_price[0] == "Flea Market":
+        location = find_icon("./Pictures/add_offer.png")
+        deviation: tuple[int, int] = (location[3][0] - location[0][0], location[3][1] - location[0][1])
+        middle: tuple[int, int] = (location[0][0] + deviation[0]/2, location[0][1] + deviation[1]/2)
+
+        gui.moveTo(middle[0], middle[1], duration=0.2)
+
+        while True:
+            if find_icon("./Pictures/maximum_offers.png") is not None:
+                print("schlafe fuer 5 sekunden")
+                sleep(5)
+                continue
+            break
+
+
+
+        #gui.click(middle[0], middle[1], duration=0.2)
+
+
+        gui.click(x=960, y=475, duration=0.2)
+        gui.write(str(vendor_price[1]))
+
+        location = find_icon("./Pictures/place_offer.png")
+        deviation: tuple[int, int] = (location[3][0] - location[0][0], location[3][1] - location[0][1])
+        middle: tuple[int, int] = (location[0][0] + deviation[0] / 2, location[0][1] + deviation[1] / 2)
+
+        gui.moveTo(middle[0], middle[1], duration=0.2)
+        #change to gui.click()
+
+
+
+        #print(find_icon("./Pictures/requirements.png")[0])
+
+
+
+
+
+
 
 
 
@@ -126,37 +163,73 @@ def sell_to_vendor(vendor: str) -> None:
 
 
 def main() -> None:
-    sleep(2)
-    top_left_name: tuple[int, int] | None = find_icon("./Pictures/mag_glass.png")[2]
-    bottom_right_name: tuple[int, int] | None = find_icon("./Pictures/exit.png")[1]
-    gui.moveTo(top_left_name)
-    sleep(1)
-    gui.moveTo(bottom_right_name, duration=1)
-    print(top_left_name[0])
-    dimensions: tuple[int, int] | None = calculate_width_height(top_left_name, bottom_right_name)
-    print(dimensions)
-    print(read_item_name(top_left_name[0], top_left_name[1], dimensions[0], dimensions[1]))
+    current_slot: tuple[float, float] = cursor_auf_anfang()
+    for i in range(2):
+        gui.moveTo(*current_slot)
+        for i in range(10):
+            sleep(2)
+            gui.moveTo(*current_slot)
+            sleep(0.5)
+            gui.click()
+            sleep(0.1)
+            gui.click()
+            try:
+                top_left_name: tuple[int, int] | None = find_icon("./Pictures/mag_glass.png")[2]
+                bottom_right_name: tuple[int, int] | None = find_icon("./Pictures/exit.png")[1]
+            except:
+                print("------EXCEPT-------")
+                if i < 9:
+                    print(current_slot)
+                    current_slot = (current_slot[0] + 63, current_slot[1])
 
-    item_name: str = read_item_name(top_left_name[0], top_left_name[1], dimensions[0], dimensions[1]).strip()
-    #item_name = "Balaclava"
+                    print(current_slot)
+                    continue
 
-    new_query = f"""
-    {{
-      items(name: "{item_name}", limit: 1) {{
-        name
-        sellFor {{
-          vendor {{ name }}
-          price
-        }}
-      }}
-    }}
-    """
+                print("-----BREAK---------")
+                break
+            gui.moveTo(top_left_name)
+            sleep(1)
+            gui.moveTo(bottom_right_name, duration=0.2)
+            print(top_left_name[0])
+            dimensions: tuple[int, int] | None = calculate_width_height(top_left_name, bottom_right_name)
+            print(dimensions)
+            print(read_item_name(top_left_name[0], top_left_name[1], dimensions[0], dimensions[1]))
+
+            item_name: str = read_item_name(top_left_name[0], top_left_name[1], dimensions[0], dimensions[1]).strip()
+            #item_name = "Balaclava"
+
+            new_query = f"""
+            {{
+              items(name: "{item_name}", limit: 1) {{
+                name
+                sellFor {{
+                  vendor {{ name }}
+                  price
+                }}
+              }}
+            }}
+            """
 
 
-    result = run_query(new_query)
-    print(result)
+            result = run_query(new_query)
+            print(result)
 
-    print(highest_vendor(result))
+
+            print(highest_vendor(result))
+            sell_to_vendor(highest_vendor(result))
+            # enter amount coordinates
+            print("Esc druecken")
+            sleep(5)
+            print(gui.position())
+
+            if i < 9:
+                current_slot = (current_slot[0] + 63, current_slot[1])
+                continue
+
+            print("-----BREAK---------")
+            break
+
+        current_slot = (cursor_auf_anfang()[0], current_slot[1]+63)
 
 
 
