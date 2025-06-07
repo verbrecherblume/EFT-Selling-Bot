@@ -16,4 +16,10 @@ Skript holt preise von tarkov.dev, verkauft sie für diesen preis auf dem flea m
 - preise sind zum teils schon etwas veraltet, da tarkov.dev nur alle 5 minuten preise aktualisiert
 
 -> neuer ansatz: preise sollen aus dem flea market im game ausgelesen werden, dadurch akuraterer preis
-                 dadurch auch keine api anfragen benötigt (außer ich will mit tradern abgleichen)
+                 dadurch auch keine api anfragen benötigt
+
+
+Stand 07.06.2025
+Neuer Prototyp
+Skript holt nun preis vom zweit billigsten eintrag, allerdings noch viele Erkennungsprobleme, weswegen preis häufig falsch gelesen wird
+-> Data training für pytesseract und auf die font von tarkov trainieren
