@@ -5,6 +5,7 @@ import numpy as np
 import pyautogui as gui
 import pytesseract
 import requests
+import keyboard
 
 pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
 
@@ -152,9 +153,58 @@ def sell_to_vendor(vendor_price: tuple[str, int]) -> None:
         #print(find_icon("./Pictures/requirements.png")[0])
 
 
+def get_price() -> str:
+    gui.moveTo(1342, 230)
+    screenshot = gui.screenshot(region=(1340, 230, 150, 27))
+    img = cv.cvtColor(np.array(screenshot), cv.COLOR_RGB2BGR)
+    screenshot.save("./screenshots/screenshot.png")
+
+    return pytesseract.image_to_string(img, lang="eng", config='--psm 7 -c tessedit_char_whitelist=0123456789 ')
 
 
+def enter_price(price: str) -> None:
+    gui.click(x=960, y=490, duration=0.2)
+    gui.write(price)
 
+
+def press_sell() -> None:
+    gui.moveTo(x=1024, y=970)
+    #change to gui.click()
+
+
+def sell_item() -> None:
+    gui.click()
+    gui.rightClick()
+    filter_by_item: tuple[int, int] | None = find_icon("./Pictures/filter_by_item.png")[0]
+    gui.click(filter_by_item[0] + 10, filter_by_item[1] + 5, duration=0.2)
+    sleep(0.5)
+
+    # get second price
+    price = get_price()
+    print(f"preis ist: {price}")
+
+    # subtract 2000
+    price = price.replace(" ", "").replace("\n", "")
+    price: str = str(int(price) - 2000)
+
+    # enter price
+    enter_price(price)
+
+    # sell item
+    print("Warte auf Enter...")
+    keyboard.wait("enter")
+    press_sell()
+
+    print("--- Main ---")
+
+
+def check_add_offer() -> bool:
+    gui.moveTo(x=1152, y=68)
+    sleep(0.5)
+    if find_icon("./Pictures/add_offer_possible.png") is not None:
+        return True
+    else:
+        return False
 
 
 
